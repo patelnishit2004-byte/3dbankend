@@ -18,7 +18,7 @@ mongoose
   .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("✅ MongoDB Connected"))
   .catch((err) => {
-    console.error("❌ MongoDB Connection Error:", err);
+    console.error("MongoDB Connection Error:", err);
     process.exit(1); // Exit if DB connection fails
   });
 
@@ -70,7 +70,10 @@ app.post("/api/menu", upload.fields([{ name: "image" }, { name: "model" }]), asy
 // 📌 API Route: Get All Menu Items
 app.get("/api/menu", async (req, res) => {
   try {
-    const menus = await Menu.find();
+    const searchQuery = req.query.search || ""; // Get search term from query params
+    const menus = await Menu.find({
+      name: { $regex: searchQuery, $options: "i" }, // Case-insensitive search
+    });
     res.json(menus);
   } catch (err) {
     console.error("❌ Error fetching menu:", err);
@@ -96,18 +99,7 @@ app.get("/api/search", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-app.get("/api/menu", async (req, res) => {
-  try {
-    const searchQuery = req.query.search || ""; // Get search term from query params
-    const menus = await Menu.find({
-      name: { $regex: searchQuery, $options: "i" }, // Case-insensitive search
-    });
-    res.json(menus);
-  } catch (err) {
-    console.error("❌ Error fetching menu:", err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
+
 // 📌 API Route: Delete a Menu Item + Remove Associated Image/Model
 app.delete("/api/menu/:id", async (req, res) => {
   try {
@@ -147,6 +139,11 @@ app.delete("/api/menu/:id", async (req, res) => {
     console.error("❌ Error deleting menu item:", err);
     res.status(500).json({ error: "Internal server error" });
   }
+});
+
+// ✅ Root Test Route
+app.get("/", (req, res) => {
+  res.send("Backend is live ✅");
 });
 
 // 🔥 Start Server
