@@ -1,0 +1,12 @@
+# Dependency folders
+node_modules/
+
+# Environment variables
+.env
+
+# Uploads / user files
+uploads/
+
+# IDE / editor settings
+*.code-workspace
+.vscode/
