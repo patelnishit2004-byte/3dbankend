@@ -146,6 +146,11 @@ app.get("/", (req, res) => {
   res.send("Backend is live ✅");
 });
 
-// 🔥 Start Server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+// ✅ Export for Vercel
+module.exports = app;
+
+// ✅ Start locally if not in Vercel
+if (require.main === module) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+}
